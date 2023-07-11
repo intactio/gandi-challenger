@@ -13,9 +13,9 @@ import argparse
 CERTBOT_VALIDATION = os.environ.get('CERTBOT_VALIDATION', None)
 DOMAIN = os.environ.get('CERTBOT_DOMAIN', None)
 
-GANDI_API_URI="https://dns.api.gandi.net/api/v5/zones"
-GANDI_API_KEY=keyring.get_password('gandi-api-key', 'gandi-api-key')
-AUTH_HEADERS={'X-Api-Key': GANDI_API_KEY}
+GANDI_API_URI = "https://dns.api.gandi.net/api/v5/zones"
+GANDI_API_KEY = keyring.get_password('gandi-api-key', 'gandi-api-key')
+AUTH_HEADERS = {'X-Api-Key': GANDI_API_KEY}
 
 
 class GandiChallenger(object):
@@ -46,14 +46,18 @@ class GandiChallenger(object):
             method = "update"
             url = self._target_acme_record['rrset_href']
             payload = {"rrset_ttl": 300, "rrset_values": [validation]}
-            result = requests.put(url, headers=AUTH_HEADERS, json=payload).json()
+            result = requests.put(url,
+                                  headers=AUTH_HEADERS,
+                                  json=payload).json()
         else:
             # create record
             method = "create"
             url = self._target_zone['zone_records_href']
             payload = {"rrset_ttl": 300, "rrset_values": [validation],
-                    "rrset_name": "_acme-challenge", "rrset_type": "TXT"}
-            result = requests.post(url, headers=AUTH_HEADERS, json=payload).json()
+                       "rrset_name": "_acme-challenge", "rrset_type": "TXT"}
+            result = requests.post(url,
+                                   headers=AUTH_HEADERS,
+                                   json=payload).json()
 
         print("%s (%s): %s" % (result['message'], method, payload))
 
@@ -71,8 +75,11 @@ class GandiChallenger(object):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='certbot challenger for gandi')
-    parser.add_argument('--cleanup', action='store_true', help="cleanup acme record")
+    parser = argparse.ArgumentParser(
+            description='certbot challenger for gandi')
+    parser.add_argument('--cleanup',
+                        action='store_true',
+                        help="cleanup acme record")
     args = parser.parse_args()
 
     gandi_challenger = GandiChallenger()
